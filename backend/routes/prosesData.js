@@ -7,6 +7,7 @@ import parser from "xml2json";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import mime from "mime";
+import { ItemModel } from "../model/Order.js";
 
 const upload = multer();
 const __filename = fileURLToPath(import.meta.url);
@@ -43,7 +44,28 @@ const writeExcelFile = (json) => {
   XLSX.writeFile(workBook, filePath);
 };
 
-router.post("/ubahformat", upload.single("file"), (req, res) => {
+router.get("/", async (req, res) => {
+  try {
+    const result = await ItemModel.find();
+    res.send(result);
+  } catch (error) {
+    res.send(error);
+    console.log(error);
+  }
+});
+
+router.post("/add-data", upload.single("file"), async (req, res) => {
+  try {
+    var json = parser.toJson(req.file.buffer);
+    json = JSON.parse(json);
+    res.send(json);
+  } catch (error) {
+    res.send(error);
+    console.log(error);
+  }
+});
+
+router.post("/ubah-format-download", upload.single("file"), (req, res) => {
   try {
     var json = parser.toJson(req.file.buffer);
     json = JSON.parse(json);

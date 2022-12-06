@@ -1,8 +1,12 @@
 import express from "express";
-import ubahformat from "./routes/ubahformat.js";
-import hilanginnol from "./routes/hilanginnol.js";
-import view from "./routes/view.js";
+import prosesData from "./routes/prosesData.js";
 import dotenv from "dotenv";
+import mongoose from "mongoose";
+
+mongoose.connect("mongodb://127.0.0.1:27017/skripsi", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
 dotenv.config();
 const app = express();
@@ -10,9 +14,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/", view);
-app.use("/", ubahformat);
-app.use("/", hilanginnol);
+app.use("/api/order", prosesData);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log("server in " + PORT));
