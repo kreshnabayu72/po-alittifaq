@@ -14,3 +14,9 @@ table, th, td {
 th{
   text-align: start;
 }
+
+nav{
+  display: flex;
+  justify-content: space-between;
+  width: 500px;
+}

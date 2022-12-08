@@ -1,13 +1,12 @@
 import express from "express";
 import multer from "multer";
 import XLSX from "xlsx";
-import fs from "fs";
 import path from "path";
 import parser from "xml2json";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import mime from "mime";
-import { ItemModel } from "../model/Order.js";
+import { ItemModel, OrderModel } from "../model/Order.js";
 
 const upload = multer();
 const __filename = fileURLToPath(import.meta.url);
@@ -46,7 +45,7 @@ const writeExcelFile = (json) => {
 
 router.get("/", async (req, res) => {
   try {
-    const result = await ItemModel.find();
+    const result = await OrderModel.find();
     res.send(result);
   } catch (error) {
     res.send(error);
@@ -54,11 +53,50 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/:nomor_po", async (req, res) => {
+  try {
+    const result = await OrderModel.findOne({ nomor_po: req.params.nomor_po });
+    res.send(result);
+  } catch (error) {
+    res.send(error);
+    console.log(error);
+  }
+});
+
+router.post("/", upload.single("file"), async (req, res) => {});
+
+// Input xml langsung disave jadi order
 router.post("/add-data", upload.single("file"), async (req, res) => {
   try {
     var json = parser.toJson(req.file.buffer);
     json = JSON.parse(json);
-    res.send(json);
+
+    let orderClean = json.po.po_detail.map((barang) => {
+      barang["nama"] = barang["description"];
+      delete barang["description"];
+      delete barang["bonus1"];
+      delete barang["bonus2"];
+      delete barang["barcode"];
+      delete barang["discount"];
+      delete barang["ppn"];
+      delete barang["ppnbm"];
+      delete barang["package"];
+      return barang;
+    });
+
+    let order = {
+      perusahaan: json.po.po_footer.tax_name,
+      cabang: json.po.po_footer.store,
+      nomor_po: json.po.po_head.po_no,
+      tanggal: json.po.po_head.po_date,
+      expired: json.po.po_footer.expired,
+      list_item: orderClean,
+    };
+
+    const newOrder = new OrderModel(order);
+    const result = await newOrder.save();
+
+    res.send(result);
   } catch (error) {
     res.send(error);
     console.log(error);

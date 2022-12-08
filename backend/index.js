@@ -1,5 +1,6 @@
 import express from "express";
-import prosesData from "./routes/prosesData.js";
+import orderRoute from "./routes/order.js";
+import userRoute from "./routes/user.js";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 
@@ -14,7 +15,8 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/api/order", prosesData);
+app.use("/api/order", orderRoute);
+app.use("/api/user", userRoute);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log("server in " + PORT));

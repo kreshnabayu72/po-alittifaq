@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "bcrypt": "^5.1.0",
     "csv": "^6.2.2",
     "dotenv": "^16.0.3",
     "excel4node": "^1.8.0",
