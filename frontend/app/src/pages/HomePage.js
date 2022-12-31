@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 
 function HomePage() {
   const [file, setFile] = useState();
+  const [file2, setFile2] = useState();
   const [orderList, setOrderList] = useState([]);
 
   useEffect(() => {
@@ -33,6 +34,9 @@ function HomePage() {
             <td>
               <Link to={`/order/${order.nomor_po}`}>{order.cabang}</Link>
             </td>
+            <td>
+              <Link to={`/order/${order.nomor_po}`}>{order.total_order}</Link>
+            </td>
           </tr>
         );
       });
@@ -46,12 +50,13 @@ function HomePage() {
     alert("Uploaded");
     window.location.reload();
   };
+
   return (
     <div>
       <h1>Home</h1>
       <div>
         <input type="file" onChange={(e) => setFile(e.target.files[0])} />
-        <button onClick={() => SubmitHandler()}>Submit</button>
+        <button onClick={() => SubmitHandler()}>Submit XML</button>
       </div>
       <table>
         <thead>
@@ -60,6 +65,7 @@ function HomePage() {
             <th>Tanggal</th>
             <th>Perusahaan</th>
             <th>Cabang</th>
+            <th>Total Order</th>
           </tr>
         </thead>
         <tbody>

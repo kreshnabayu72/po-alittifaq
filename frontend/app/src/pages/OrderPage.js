@@ -6,7 +6,6 @@ function OrderPage() {
   const params = useParams();
 
   const [order, setOrder] = useState();
-  const [total, setTotal] = useState(0);
 
   useEffect(() => {
     const Fetch = async () => {
@@ -17,19 +16,49 @@ function OrderPage() {
     Fetch();
   }, []);
 
-  useEffect(() => {
-    if (order)
-      setTotal(order.list_item.map((i) => i.total).reduce((a, b) => a + b));
-  }, [order]);
+  const DownloadBTBHandler = (e) => {
+    axios
+      .get(`/api/order/${params.nomor_po}/btb`, { responseType: "blob" })
+      .then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", `${Date.now()}.xlsx`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      });
+  };
+  const DownloadFakturHandler = (e) => {
+    axios
+      .get(`/api/order/${params.nomor_po}/faktur`, { responseType: "blob" })
+      .then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", `${Date.now()}.xlsx`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      });
+  };
 
   const OrderHeader = () => {
     if (order)
       return (
         <>
-          <h1>{params.nomor_po}</h1>
-          <h2>{order.date}</h2>
-          <h4>{order.cabang}</h4>
-          <h4>{new Date(order.tanggal).toLocaleDateString()}</h4>
+          <div>
+            <h1>{params.nomor_po}</h1>
+            <h2>{order.date}</h2>
+            <h4>{order.cabang}</h4>
+            <h4>{new Date(order.tanggal).toLocaleDateString()}</h4>
+          </div>
+          <div>
+            <button onClick={(e) => DownloadBTBHandler(e)}>Download BTB</button>
+            <button onClick={(e) => DownloadFakturHandler(e)}>
+              Download Faktur
+            </button>
+          </div>
         </>
       );
     else {
@@ -64,11 +93,11 @@ function OrderPage() {
   };
 
   const TotalRow = () => {
-    if (total)
+    if (order)
       return (
         <tr>
           <td colSpan={6}>Total</td>
-          <td>{total}</td>
+          <td>{order.total_order}</td>
         </tr>
       );
     else {

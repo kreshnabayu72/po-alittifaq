@@ -17,7 +17,7 @@ const orderSchema = mongoose.Schema({
   tanggal: Date,
   expired: Date,
   list_item: [itemSchema],
+  total_order: Number,
 });
 
-export const ItemModel = mongoose.model("Item", itemSchema);
 export const OrderModel = mongoose.model("Order", orderSchema);
